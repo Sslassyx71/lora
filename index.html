@@ -1,0 +1,428 @@
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Для Лоры</title>
+<link href="https://fonts.googleapis.com/css2?family=Marck+Script&family=Cormorant+Garamond:wght@400;500&family=Press+Start+2P&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3/dist/tabler-icons.min.css">
+<style>
+html,body{margin:0;background:#1a0409;overflow-x:hidden;-webkit-text-size-adjust:100%}
+body{padding:14px 0 30px;touch-action:manipulation}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+#outer{display:flex;justify-content:center}
+#stage{width:352px;transform-origin:top center}
+#app{background:#2a0712;border-radius:16px;padding:12px 6px 14px;color:#f6e7e1;font-family:'Cormorant Garamond',serif}
+#app button{font-family:'Cormorant Garamond',serif;color:#e8c4b8;background:transparent;border:0.5px solid #e8c4b8;border-radius:999px;font-size:17px;padding:9px 20px;cursor:pointer}
+.ms{font-family:'Marck Script',cursive}
+.px{font-family:'Press Start 2P',monospace}
+#wrap{position:relative;width:340px;height:520px;margin:0 auto;overflow:hidden;border-radius:12px}
+#cv{display:block;width:340px;height:520px;cursor:pointer;touch-action:manipulation}
+#hud{display:flex;gap:5px;width:340px;margin:0 auto 8px}
+.q{flex:1;display:flex;align-items:center;justify-content:center;gap:4px;height:32px;border:0.5px solid #5e1427;border-radius:8px;color:#b98a80;font-size:15px;transition:all .4s}
+.q.done{border-color:#e8b4a6;color:#f6e7e1;background:#4a0f1f}
+#dlg{position:absolute;left:8px;right:8px;bottom:8px;background:#f6e7e1;color:#4a0f1f;border-radius:10px;padding:10px 14px 18px;font-size:18px;line-height:1.3;display:none;cursor:pointer;z-index:4}
+#bub{position:absolute;display:none;background:#f6e7e1;color:#4a0f1f;font-size:15px;padding:4px 10px;border-radius:10px;white-space:nowrap;z-index:3;pointer-events:none}
+#choice{position:absolute;left:8px;right:8px;bottom:14px;display:none;gap:10px;justify-content:center;z-index:5}
+#app #choice button{background:#f6e7e1;color:#4a0f1f;border:0;font-size:19px;padding:10px 24px}
+#ov,#fin{position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:16px;box-sizing:border-box;z-index:6}
+#ov{background:rgba(26,4,10,.95)}
+#fade{position:absolute;inset:0;background:#120208;opacity:0;pointer-events:none;transition:opacity .3s;z-index:8}
+#app .key{width:58px;height:46px;border-radius:10px;padding:0;font-size:14px;font-family:'Press Start 2P',monospace}
+#app .cnd{width:24px;height:56px;padding:0;border:0;border-radius:0;background:transparent;position:relative}
+.cnd .st{position:absolute;left:9px;bottom:0;width:6px;height:36px;background:#f6e7e1}
+.cnd:nth-child(odd) .st{background:#ed93b1}
+.cnd .fl{position:absolute;left:7px;top:2px;width:10px;height:15px;background:#ffcf7a;border-radius:50% 50% 45% 45%/60% 60% 40% 40%;animation:fl .25s infinite alternate;transform-origin:50% 100%}
+.cnd.out .fl{display:none}
+.cnd.out::after{content:'';position:absolute;left:9px;top:8px;width:6px;height:6px;border-radius:50%;background:#b98a80;animation:smoke 1.2s forwards}
+.flap{position:absolute;top:0;left:0;width:0;height:0;border-left:120px solid transparent;border-right:120px solid transparent;border-top:92px solid #5e1427;transform-origin:top;transition:transform .8s}
+.open .flap{transform:rotateX(180deg)}
+@keyframes fl{to{transform:scale(.88,1.15)}}
+@keyframes smoke{to{transform:translateY(-30px) scale(2);opacity:0}}
+@keyframes rise{to{transform:translateY(-680px)}}
+@keyframes pulse{50%{opacity:.4}}
+@keyframes pop{0%{transform:scale(0)}70%{transform:scale(1.08)}100%{transform:scale(1)}}
+@keyframes tw{50%{opacity:.15}}
+@keyframes shake{25%{transform:translateX(-7px)}75%{transform:translateX(7px)}}
+</style>
+<div id="outer"><div id="stage"><div id="app">
+  <h2 class="sr-only">Игра-поздравление для Лоры</h2>
+  <div id="intro" style="text-align:center;padding:90px 0 110px">
+    <p class="ms" style="font-size:32px;margin:0 0 30px;color:#e8c4b8">Для Лоры</p>
+    <div id="env" style="position:relative;width:240px;height:160px;margin:0 auto;background:#7a1f33;cursor:pointer;border-radius:4px">
+      <div class="flap"></div>
+      <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:30px;color:#e8c4b8;padding-top:50px"><i class="ti ti-heart"></i></div>
+    </div>
+    <p style="margin:34px 0 0;font-size:18px;color:#d9a595">Нажми на конверт</p>
+    <p style="margin:10px 0 0;font-size:14px;color:#b98a80">Включи звук, тут есть музыка</p>
+  </div>
+  <div id="game" style="display:none">
+    <div id="hud">
+      <div class="q" id="q1"><i class="ti ti-photo"></i><span id="n1">0/8</span></div>
+      <div class="q" id="q2"><canvas id="sic" width="28" height="32" style="width:12px;height:14px"></canvas><span id="n2">0/17</span></div>
+      <div class="q" id="q3"><i class="ti ti-heart"></i></div>
+      <div class="q" id="q4" style="opacity:.5"><i class="ti ti-cake"></i></div>
+      <button id="mus" aria-label="Музыка" style="height:32px;padding:0 11px;border-radius:8px"><i class="ti ti-music"></i></button>
+    </div>
+    <div id="wrap">
+      <canvas id="cv"></canvas>
+      <div id="bub"></div>
+      <div id="dlg"><span id="dt"></span><i class="ti ti-chevron-down" style="position:absolute;right:10px;bottom:3px;font-size:14px;animation:pulse 1s infinite"></i></div>
+      <div id="choice"><button data-c="hug">Обнять</button><button data-c="kiss">Поцеловать</button></div>
+      <div id="ov"></div>
+      <div id="fin">
+        <p class="px" style="font-size:56px;margin:0;color:#e8b4a6;opacity:0;transition:opacity 1s">17</p>
+        <p class="ms" style="font-size:36px;margin:18px 0 0;color:#f6e7e1;opacity:0;transition:opacity 1s">С днём рождения, Лора</p>
+        <p style="font-size:22px;margin:10px 0 0;opacity:0;transition:opacity 1s">Я люблю тебя, моя клубничка</p>
+        <button id="back" style="margin-top:34px;opacity:0;transition:opacity 1s">Вернуться в коридор</button>
+      </div>
+      <div id="fade"></div>
+    </div>
+  </div>
+  <div id="song" style="height:0;overflow:hidden;opacity:0;transition:opacity .6s">
+    <p class="ms" style="font-size:24px;color:#e8c4b8;margin:14px 0 8px;text-align:center">Наша песня</p>
+    <div style="width:340px;margin:0 auto;border-radius:10px;overflow:hidden"><div id="yt"></div></div>
+  </div>
+</div></div></div>
+<script>
+const IMGS=['https://i.postimg.cc/1f5JxKmn/IMG-6233.jpg','https://i.postimg.cc/vcH3RvYc/IMG-6329.jpg','https://i.postimg.cc/pyBq1SHN/IMG-6665.jpg','https://i.postimg.cc/QVq0nzrR/IMG-6666.jpg','https://i.postimg.cc/8sbtnYV2/IMG-6667.jpg','https://i.postimg.cc/qgGjZFdc/IMG-6668.jpg','https://i.postimg.cc/9zBJNkjG/IMG-6669.jpg','https://i.postimg.cc/PNHSyj0m/IMG-6670.jpg'];
+const YT_ID='JvnEc4xun98';
+const START=new Date(2026,9,3,0,0,0),CODE='0310';
+const W=170,H=260,S=4,$=id=>document.getElementById(id);
+const cv=$('cv'),ctx=cv.getContext('2d');cv.width=W*S;cv.height=H*S;
+let g=ctx;
+const C={wall:'#5c1526',wall2:'#561424',base:'#8f4f4a',f1:'#4a1d22',f2:'#43191e',seam:'#36121a',rug:'#6b1a2e',rug2:'#8f2a3f',rug3:'#7a1f33',wood:'#8f4f4a',woodD:'#6e3a38',leg:'#4f2226',gold:'#d9a595',cream:'#f6e7e1',rose:'#e8b4a6',bur:'#7a1f33',dark:'#3b0c18',sky:'#1b0f2e',warm:'#ffd9a0'};
+const HEART=['.X.X.','XXXXX','.XXX.','..X..'],NOTE=['..XX','..X.','XXX.','XX..'],Q=['XXX','..X','.X.','...','.X.'],BALL=['.XXX.','XXXXX','XXXXX','XXXXX','.XXX.'];
+const DG={'1':['.X.','XX.','.X.','.X.','XXX'],'7':['XXX','..X','.X.','.X.','.X.']};
+const STR=['..g.g..','...g...','.rrrrr.','rryrryr','rrrrrrr','.ryrrr.','..rrr..','...r...'],STRM={g:'#639922',r:'#e0384b',y:'#ffd9a0'},STRF={g:'#e9a9bd',r:'#efa3b8',y:'#f7c8d6'};
+const BROC=['.gGg.','gGgGg','GgGgG','.gsg.','..s..'],BROCM={g:'#3b6d11',G:'#639922',s:'#97c459'};
+const CAT=['.e..e.........','.eeee.........','eeeeee.eeeee..','ekeeke.eeeeee.','eeeeeeeeeeeeee','eepeeeeeeeeeee','.eeeeeeeeeeee.'];
+const BUN=['.w...w.','.wp.pw.','.wp.pw.','.wwwww.','wwkwkww','wwwpwww','.wwwww.','wwwwwww','wwwwwww','.ww.ww.'];
+const P=[['Мы','За то, что рядом с тобой мне спокойно.'],['Наш вечер','За то, что с тобой любое место становится нашим.'],['Моя любимая','За то, что ты можешь кривляться в камеру и всё равно быть самой красивой.'],['Ты и я','За то, что ты любишь меня, и я каждый день чувствую это.'],['Наш кадр','За улыбку, после которой всё остальное становится неважным.'],['Любимый момент','За твои глаза, в которые я могу смотреть бесконечно.'],['Самая красивая','За то, что ты есть.'],['Навсегда','И за всё, что не уместилось в слова.']];
+const PP=[[38,128],[50,132],[62,127],[74,132],[87,128],[99,132],[111,127],[123,131]];
+const DOORS=[{x:14,id:'photo',col:'#7a1f33',sh:'#6b1a2e',lab:'фото'},{x:52,id:'straw',col:'#d4537e',sh:'#c04670',lab:'клубника'},{x:92,id:'him',col:'#3c3489',sh:'#342d78',lab:'сюрприз'},{x:130,id:'party',col:'#a32d4a',sh:'#8f2640',lab:'праздник'}];
+const BLN=[[12,58,'#e8b4a6'],[22,50,'#ed93b1'],[8,44,'#f6e7e1'],[158,58,'#e8b4a6'],[148,50,'#a32d4a'],[162,42,'#ed93b1']];
+const HX=112,HY=172;
+const cityL=[],imEl=IMGS.map(u=>{if(!u)return null;const i=new Image();i.src=u;return i});
+let sd=11;const rnd=()=>(sd=(sd*9301+49297)%233280)/233280;
+let scene='hall',px=85,py=210,path=[],moving=false,dir='down',pending=null,tk=0,tgt=null,started=false,fading=false;
+const found=new Set(),secrets=new Set(),seenR={};
+let boxOpen=false,photoDone=false,strawDone=false,himDone=false,partyDone=false,finale=false,usedRadio=false,code='',blown=0,blowing=false,best=0,cg=null,anim=null,himWave=0,shoot=null;
+let doorAnim=null,emo=null,catAwake=0,lampOn=true,deskOn=true,bunJump=0,giftShake=0;const plantSway=[0,0],popB=[0,0,0,0,0,0],ball={x:40,y:228,vx:0,vy:0,rot:0};
+const amb=[],notes=[],fw=[],hearts=[],dust=[],conf=[];
+const motes=[];for(let i=0;i<12;i++)motes.push({x:22+Math.random()*50,y:122+Math.random()*50,p:Math.random()*6});
+const stars=[];while(stars.length<15){const s={x:13+Math.random()*32,y:17+Math.random()*40,p:Math.random()*6};if(!(s.x>33&&s.y<29))stars.push(s)}
+function r(x,y,w,h,c){g.fillStyle=c;g.fillRect(Math.round(x*S),Math.round(y*S),Math.max(1,Math.round(w*S)),Math.max(1,Math.round(h*S)))}
+function pat(p,x,y,c,s){s=s||1;p.forEach((row,j)=>{for(let i=0;i<row.length;i++)if(row[i]==='X')r(x+i*s,y+j*s,s,s,c)})}
+function spr(p,x,y,m,s){s=s||1;p.forEach((row,j)=>{for(let i=0;i<row.length;i++){const c=m[row[i]];if(c)r(x+i*s,y+j*s,s,s,c)}})}
+function ell(cx,cy,rx,ry,c){for(let y=-ry;y<=ry;y++){const hw=Math.round(rx*Math.sqrt(1-(y/ry)*(y/ry)));r(cx-hw,cy+y,hw*2,1,c)}}
+function plural(n,a,b,c){const m=n%10,h=n%100;if(m===1&&h!==11)return a;if(m>=2&&m<=4&&(h<12||h>14))return b;return c}
+function clamp(v,a,b){return Math.max(a,Math.min(b,v))}
+function floorRows(y0,a,b,s){for(let y=y0,k=0;y<H;y+=8,k++){r(0,y,W,8,k%2?a:b);r(0,y,W,.5,s);for(let x=(k%3)*16+4;x<W;x+=48)r(x,y,.5,8,s)}}
+function mat(a,b){r(68,245,34,11,a);r(69,246,32,9,b);r(84.5,247,1,4,C.cream);r(82.5,250,5,1,C.cream);r(83.5,251,3,1,C.cream)}
+function basket(x,y,n){if(n>0)r(x-6,y-2,3,2,'#e0384b');if(n>5)r(x+2,y-2,3,2,'#e0384b');if(n>10)r(x-2,y-3,3,2,'#e0384b');if(n>14)r(x+5,y-1,2,1,'#e0384b');
+  r(x-10,y,20,9,'#b07a4a');r(x-10,y+3,20,1,'#8a5a34');r(x-10,y+6,20,1,'#8a5a34');for(let k=-8;k<=8;k+=4)r(x+k,y,1,9,'#8a5a34');r(x-9,y-5,1,5,'#8a5a34');r(x+8,y-5,1,5,'#8a5a34');r(x-9,y-6,18,1,'#8a5a34')}
+const GL={};function glow(col){if(GL[col])return GL[col];const c=document.createElement('canvas');c.width=c.height=128;const x=c.getContext('2d'),gr=x.createRadialGradient(64,64,0,64,64,64);gr.addColorStop(0,col);gr.addColorStop(1,'rgba(0,0,0,0)');x.fillStyle=gr;x.fillRect(0,0,128,128);return GL[col]=c}
+function light(lx,ly,rad,col,a){ctx.globalCompositeOperation='lighter';ctx.globalAlpha=Math.max(0,a);const s=rad*S*2;ctx.drawImage(glow(col),lx*S-s/2,ly*S-s/2,s,s);ctx.globalAlpha=1;ctx.globalCompositeOperation='source-over'}
+const VIG=document.createElement('canvas');VIG.width=cv.width;VIG.height=cv.height;{const v=VIG.getContext('2d'),gr=v.createRadialGradient(340,560,250,340,520,720);gr.addColorStop(0,'rgba(8,0,4,0)');gr.addColorStop(1,'rgba(8,0,4,0.6)');v.fillStyle=gr;v.fillRect(0,0,680,1040)}
+const BG={};
+function mk(n,fn){const c=document.createElement('canvas');c.width=W*S;c.height=H*S;g=c.getContext('2d');fn();g=ctx;BG[n]=c}
+mk('hall',()=>{r(0,0,W,116,C.wall);for(let x=6;x<W;x+=12)r(x,0,1,112,C.wall2);r(0,0,W,3,'#4a0f1f');for(let x=0;x<W;x++)r(x,5+Math.sin(x/14)*1.5,1,.5,'#1e050c');
+  r(50,10,70,31,C.gold);r(51,11,68,29,C.dark);r(0,112,W,4,C.base);r(0,112,W,1,'#a3605a');
+  DOORS.forEach(D=>{const x=D.x;r(x-4,46,34,10,C.gold);r(x-3,47,32,8,C.dark);r(x-2,58,30,58,C.gold);r(x-1,59,28,57,'#b8877a');r(x,60,26,56,D.col);r(x+3,64,20,22,D.sh);r(x+3,90,20,22,D.sh);r(x+3,64,20,1,'rgba(255,255,255,0.12)');r(x+3,90,20,1,'rgba(255,255,255,0.12)');r(x+21,92,2,2,C.gold)});
+  [44.5,83,122].forEach(x=>{r(x,62,3,6,C.gold);r(x-1,60,5,2,C.gold)});
+  floorRows(116,C.f1,C.f2,C.seam);
+  r(6,150,158,52,C.gold);r(7,151,156,50,C.bur);r(10,154,150,44,C.rug);for(let x=14;x<158;x+=12)pat(HEART,x,174,C.rug2);for(let x=8;x<162;x+=4){r(x,148,1,2,C.gold);r(x,202,1,2,C.gold)}});
+mk('photo',()=>{r(0,0,W,116,C.wall);for(let x=6;x<W;x+=12)r(x,0,1,112,C.wall2);r(0,0,W,3,'#4a0f1f');for(let x=0;x<W;x++)r(x,5+Math.sin(x/14)*1.5,1,.5,'#1e050c');
+  r(10,14,38,46,C.gold);r(12,16,34,42,C.sky);r(36,19,7,7,C.cream);r(35,20,1,5,C.cream);r(38,18,6,6,C.sky);
+  r(2,9,54,2,C.gold);r(4,11,7,55,C.bur);r(5,11,1,55,C.rug2);r(8,11,1,55,'#5e1427');r(47,11,7,55,C.bur);r(52,11,1,55,C.rug2);r(49,11,1,55,'#5e1427');r(8,60,42,3,C.base);
+  r(56,10,68,42,C.gold);r(57,11,66,40,C.dark);
+  r(143,8,2,4,C.gold);r(136,12,16,2,C.dark);r(131,14,26,3,'#a32d4a');r(128,15,6,11,'#a32d4a');r(154,15,6,11,'#a32d4a');r(128,24,6,2,C.cream);r(154,24,6,2,C.cream);r(134,14,20,32,'#a32d4a');r(150,14,4,32,'#8f2640');r(141,14,6,3,C.bur);pat(DG['1'],137,22,C.cream,2);pat(DG['7'],145,22,C.cream,2);
+  r(0,112,W,4,C.base);r(0,112,W,1,'#a3605a');floorRows(116,C.f1,C.f2,C.seam);
+  g.fillStyle='rgba(246,231,225,0.05)';g.beginPath();g.moveTo(12*S,116*S);g.lineTo(46*S,116*S);g.lineTo(86*S,178*S);g.lineTo(42*S,178*S);g.closePath();g.fill();
+  ell(85,214,64,28,C.rug2);ell(85,214,61,26,C.rug);ell(85,214,47,19,C.rug3);ell(85,214,44,17,C.rug);pat(HEART,83,212,C.rug2);
+  [[2,4],[130,132]].forEach(([a,b])=>{r(a,88,38,3,C.wood);r(a,88,38,1,'#a3605a');r(b,91,34,25,C.bur);r(b,103,34,1,'#5e1427');r(b+15,96,4,1,C.gold);r(b+15,108,4,1,C.gold);r(b+1,116,3,2,C.leg);r(b+30,116,3,2,C.leg)});
+  r(8,80,26,8,C.dark);r(8,80,26,1,'#5e1427');r(29,74,1,6,C.gold);r(25,74,5,1,C.gold);mat(C.gold,C.bur)});
+mk('straw',()=>{r(0,0,W,116,'#f7c8d6');for(let y=14,k=0;y<100;y+=26,k++)for(let x=(k%2)*14+6;x<W;x+=28)spr(STR,x,y,STRF);
+  r(0,112,W,4,'#ed93b1');for(let y=116,k=0;y<H;y+=8,k++)for(let x=0,j=0;x<W;x+=10,j++)r(x,y,10,8,(k+j)%2?'#fbe3ea':'#f6d0dc');
+  ell(85,206,44,22,'#c42d40');ell(85,206,42,20,'#e0384b');ell(78,200,20,8,'#e8505f');for(let k=0;k<26;k++){const a=rnd()*6.28,d=Math.sqrt(rnd());r(85+Math.cos(a)*36*d,206+Math.sin(a)*16*d,1,1,'#ffd9a0')}ell(85,184,16,4,'#639922');ell(85,183,10,2,'#97c459');r(84,178,2,5,'#3b6d11');
+  r(10,98,34,3,'#c04670');r(12,101,2,17,'#a8395e');r(40,101,2,17,'#a8395e');r(6,60,42,24,'#d4537e');r(7,61,40,22,'#fbeaf0');basket(27,89,9);
+  r(118,54,46,3,'#c04670');for(let i=0;i<3;i++){const x=123+i*13;r(x,43,9,11,'#f6e7e1');r(x+1,46,7,7,'#e0384b');r(x+1,46,2,7,'#f0606f');r(x,41,9,2,'#d4537e')}
+  spr(STR,136,94,STRM,3);r(85,0,1,12,'#a32d4a');spr(STR,78,12,STRM,2);mat('#d4537e','#f4c0d1')});
+mk('him',()=>{r(0,0,W,120,'#2b2d4a');for(let x=6;x<W;x+=12)r(x,0,1,116,'#27293f');r(0,116,W,4,'#5a5a72');r(0,116,W,1,'#76768f');floorRows(120,'#4a3a30','#43342a','#3a2c23');
+  r(12,12,52,52,'#b4b2a9');r(14,14,48,48,'#141633');r(52,18,5,5,C.cream);r(51,17,4,4,'#141633');
+  for(let x=14;x<62;x+=6){const h=8+Math.floor(rnd()*22);r(x,62-h,6,h,'#0d0e22');for(let yy=62-h+2;yy<60;yy+=3)for(let xx=x+1;xx<x+5;xx+=2)if(rnd()<.35)cityL.push([xx,yy])}
+  r(118,14,40,48,'#e6f1fb');ell(138,35,12,12,'#222222');ell(138,35,11,11,'#ffffff');r(135,32,6,6,'#222222');r(129,29,3,3,'#222222');r(144,29,3,3,'#222222');r(130,40,3,3,'#222222');r(143,40,3,3,'#222222');r(136,43,4,3,'#222222');pat(DG['1'],134,52,'#185fa5');pat(DG['7'],138,52,'#185fa5');
+  r(4,98,56,22,'#5a5a72');r(6,94,52,8,'#e6e6f0');r(8,90,16,6,'#ffffff');r(24,94,34,14,'#7f77dd');r(24,94,34,2,'#afa9ec');for(let x=28;x<58;x+=6)r(x,99,2,2,'#afa9ec');
+  r(116,96,48,4,'#6e4a3a');r(118,100,3,20,'#5a3a2e');r(159,100,3,20,'#5a3a2e');r(126,88,18,8,'#888780');r(127,89,16,6,'#b5d4f4');r(124,96,22,1,'#b4b2a9');
+  ell(85,206,50,22,'#444461');ell(85,206,46,19,'#5a5a72');pat(HEART,82.5,204,'#444461');mat('#5a5a72','#444461')});
+mk('party',()=>{r(0,0,W,116,'#4a0f1f');for(let y=10,k=0;y<110;y+=12,k++)for(let x=(k%2)*8+4;x<W;x+=16)r(x,y,1,1,C.bur);r(0,112,W,4,C.base);r(0,112,W,1,'#a3605a');
+  for(let y=116,k=0;y<H;y+=8,k++)for(let x=0,j=0;x<W;x+=10,j++)r(x,y,10,8,(k+j)%2?'#3b0c18':'#43101e');
+  const cc=['#ffd9a0','#ed93b1','#f6e7e1','#e0384b','#9fe1cb'];for(let k=0;k<70;k++)r(rnd()*168,120+rnd()*136,1,1,cc[k%5]);
+  r(0,6,W,.5,C.gold);const bc=['#e8b4a6','#a32d4a','#f6e7e1','#ed93b1'];for(let i=0;i<17;i++){const x=i*10;for(let j=0;j<6;j++){const w=8-j*1.3;r(x+5-w/2,6.5+j,w,1,bc[i%4])}}
+  r(20,22,130,18,C.bur);r(20,22,130,1,C.gold);r(20,39,130,1,C.gold);r(16,24,4,14,'#5e1427');r(150,24,4,14,'#5e1427');
+  r(56,168,58,3,'rgba(0,0,0,0.3)');r(56,136,58,10,C.cream);r(56,146,58,22,'#efd9d9');for(let k=0;k<10;k++)r(57+k*6,166,4,2,'#e8c4c4');r(56,146,58,1,'#e8c4c4');mat(C.bur,'#6b1a2e')});
+mk('catch',()=>{r(0,0,W,H,'#fbeaf0');for(let x=0;x<W;x+=20)r(x,0,10,H,'#f8dfe8');for(let y=40,k=0;y<220;y+=40,k++)for(let x=(k%2)*20+8;x<W;x+=40)spr(STR,x,y,STRF);r(0,248,W,12,'#f4c0d1');r(0,248,W,1,'#ed93b1')});
+function lora(x,y,d,mv,ph){x=Math.round(x);y=Math.round(y);ph=ph||0;const f=mv&&Math.floor(tk/7)%2,u=mv&&f?-1:0,H1='#b8865a',HD='#9c6e45',HL='#d6a978',sk='#f2cbb5',jk='#8a6a55',jkD='#715541',jl='#efe0c4',jn='#b9c6d2',jnD='#9aa8b6',ey='#3b1a14';
+  r(x-5,y-1,10,2,'rgba(0,0,0,0.3)');const la=f?1:0,ra=mv&&!f?1:0;
+  r(x-3,y-7,2,6-la,jn);r(x-3,y-7,1,6-la,jnD);r(x-3,y-1-la,2,1,C.cream);r(x+1,y-7,2,6-ra,jn);r(x+2,y-7,1,6-ra,jnD);r(x+1,y-1-ra,2,1,C.cream);
+  r(x-4,y-15+u,8,8,jk);r(x+2,y-15+u,2,8,jkD);r(x-3,y-13+u,1,1,jl);r(x+2,y-13+u,1,1,jl);r(x-1,y-11+u,2,1,jl);r(x-3,y-9+u,1,1,jl);r(x+2,y-9+u,1,1,jl);
+  r(x-5,y-14+u+(f?1:0),1,6,jk);r(x+4,y-14+u+(f?0:1),1,6,jkD);r(x-5,y-8+u+(f?1:0),1,1,sk);r(x+4,y-8+u+(f?0:1),1,1,sk);
+  if(d==='up'){r(x-5,y-23+u,10,15,H1);r(x-4,y-25+u,8,2,H1);r(x+2,y-23+u,3,15,HD);r(x-3,y-24+u,1,10,HL)}
+  else{const e=d==='left'?-1:d==='right'?1:0,bl=((tk+ph)%180)<5;
+    r(x-4,y-25+u,8,2,H1);r(x-5,y-23+u,10,3,H1);r(x-3,y-21+u,6,6,sk);r(x-5,y-21+u,2,13,H1);r(x+3,y-21+u,2,13,HD);r(x-2,y-25+u,2,1,HL);r(x-4,y-21+u,1,9,HL);
+    if(e===1)r(x-5,y-21+u,3,13,H1);if(e===-1)r(x+2,y-21+u,3,13,HD);
+    if(bl){r(x-2+e,y-18.5+u,1,.5,ey);r(x+1+e,y-18.5+u,1,.5,ey)}else{r(x-2+e,y-19+u,1,1,ey);r(x+1+e,y-19+u,1,1,ey)}
+    r(x-2+e,y-17+u,1,1,'#eaa49a');r(x+1+e,y-17+u,1,1,'#eaa49a');r(x-.5+e,y-16+u,1,.5,'#c46b6b')}}
+function himS(x,y,face,wave){const hr='#3a2418',hrL='#5a3a28',sk='#f0c8b0',jk='#5a2e22',jkD='#47241b',pn='#1f1a1c',ey='#2a1a14';
+  r(x-5,y-1,10,2,'rgba(0,0,0,0.3)');r(x-3,y-8,2,7,pn);r(x+1,y-8,2,7,pn);r(x-3,y-1,2,1,'#eeeeee');r(x+1,y-1,2,1,'#eeeeee');
+  r(x-5,y-18,10,10,jk);r(x+3,y-18,2,10,jkD);r(x-1,y-18,2,9,'#eeeeee');r(x-6,y-17,1,7,jk);r(x-6,y-10,1,1,sk);
+  if(wave){const w=Math.floor(tk/10)%2;r(x+5,y-24+w,1,7,jkD);r(x+5,y-25+w,1,1,sk)}else{r(x+5,y-17,1,7,jkD);r(x+5,y-10,1,1,sk)}
+  r(x-3,y-25,6,7,sk);const e=face==='left'?-1:face==='right'?1:0,bl=((tk+70)%210)<5;
+  if(bl){r(x-2+e,y-20.5,1,.5,ey);r(x+1+e,y-20.5,1,.5,ey)}else{r(x-2+e,y-21,1,1,ey);r(x+1+e,y-21,1,1,ey)}
+  r(x-2+e,y-19,1,1,'#eaa49a');r(x+1+e,y-19,1,1,'#eaa49a');r(x-.5+e,y-18.5,1,.5,'#b5615a');
+  r(x-4,y-28,8,2,hr);r(x-5,y-26,10,3,hr);r(x-5,y-23,2,5,hr);r(x+3,y-23,2,5,hr);r(x-4,y-24,8,2,hr);r(x-2,y-28,3,1,hrL);r(x-3,y-25,1,1,hrL)}
+function spark(x,y,ph){if(Math.sin(tk/10+ph)>.2){r(x,y-1,1,3,C.warm);r(x-1,y,3,1,C.warm)}}
+function lights(){const LC=['#ffd9a0','#e8b4a6','#f6e7e1'];for(let i=0;i<17;i++){const x=4+i*9.6,y=5+Math.sin(x/14)*1.5,on=Math.sin(tk/18+i*1.9)>-.4;r(x,y+.5,2,2,on?LC[i%3]:'#6e3a38');if(on&&i%2)light(x+1,y+1.5,7,'rgba(255,200,150,1)',.25)}}
+function txt(s,x,y,font,col){ctx.textAlign='center';ctx.font=font;ctx.fillStyle=col;ctx.fillText(s,x*S,y*S)}
+function timerTxt(cx,a,b,c){const d=Math.max(0,Math.floor((Date.now()-START)/1000)),days=Math.floor(d/86400),pd=n=>String(n).padStart(2,'0');
+  ctx.textAlign='center';ctx.fillStyle=C.gold;ctx.font='500 26px "Cormorant Garamond"';ctx.fillText('мы вместе уже',cx,a);ctx.font='22px "Press Start 2P"';ctx.fillStyle=C.cream;ctx.fillText(days+' '+plural(days,'ДЕНЬ','ДНЯ','ДНЕЙ'),cx,b);ctx.fillStyle=C.rose;ctx.fillText(pd(Math.floor(d%86400/3600))+':'+pd(Math.floor(d%3600/60))+':'+pd(d%60),cx,c)}
+function photoOf(i){const e=imEl[i];return e&&e.complete&&e.naturalWidth?e:null}
+function coverTo(c,im,dx,dy,dw,dh){const ar=dw/dh,iw=im.naturalWidth||im.width,ih=im.naturalHeight||im.height;let sw=iw,sh=iw/ar;if(sh>ih){sh=ih;sw=ih*ar}c.drawImage(im,(iw-sw)/2,(ih-sh)/2,sw,sh,dx,dy,dw,dh)}
+const allDone=()=>photoDone&&strawDone&&himDone;
+const isDone=id=>({photo:photoDone,straw:strawDone,him:himDone,party:partyDone})[id];
+function emote(k){emo={k,t:0}}
+function nearTable(){return(py<=126||(py>=172&&py<=188))&&px>28&&px<142}
+function table(){r(36,168,98,3,'rgba(0,0,0,0.25)');r(34,126,102,16,C.wood);r(34,126,102,1,'#a3605a');for(let x=40;x<134;x+=14)r(x,130,10,.5,'#9a5852');r(34,142,102,4,C.woodD);r(38,146,4,24,C.leg);r(128,146,4,24,C.leg);const nt=nearTable();
+  PP.forEach(([x,y],i)=>{const lift=nt&&!found.has(i)?Math.round(Math.sin(tk/8+i)*.6+.4):0,yy=y-lift;r(x+1,y+1,10,9,'rgba(0,0,0,0.25)');r(x,yy,10,9,C.cream);const im=photoOf(i);
+    if(found.has(i)){if(im)coverTo(ctx,im,(x+1)*S,(yy+1)*S,8*S,6*S);else{r(x+1,yy+1,8,6,C.rose);pat(HEART,x+2.5,yy+2,C.bur)}}
+    else{r(x+1,yy+1,8,6,'#c98f82');pat(Q,x+3.5,yy+1.5,C.cream);if(nt&&Math.floor(tk/14)%2){r(x-1,yy-1,12,1,C.warm);r(x-1,yy+9,12,1,C.warm);r(x-1,yy,1,9,C.warm);r(x+10,yy,1,9,C.warm)}else if(Math.sin(tk/9+i)>.6)r(x+4,yy-2,2,1,C.warm)}})}
+function cakeD(){r(70,136,30,2,'#e8c4c4');r(72,124,26,13,C.rose);r(72,124,26,2,C.cream);[74,80,87,93].forEach((x,k)=>r(x,126,2,k%2?3:2,C.cream));pat(DG['1'],81,129,C.bur);pat(DG['7'],85,129,C.bur);r(77,116,16,8,C.cream);r(77,116,16,1,'#ffffff');r(80,119,2,2,'#e0384b');r(88,119,2,2,'#e0384b');r(84,118,2,2,'#e0384b');
+  if(!partyDone)for(let k=0;k<5;k++){const x=78+k*3;r(x,111,1,5,k%2?C.rose:C.cream);r(x,109-(Math.floor(tk/6+k)%2),1,2,'#ffcf7a')}}
+function cat(){const x=114,y=186,aw=catAwake>0;r(x+1,y+7,13,1,'rgba(0,0,0,0.25)');spr(CAT,x,y,{e:'#c98b5a',k:aw?'#2a1a10':'#7a4f2e',p:'#e8a39a'});r(x+8,y+3,1,1,'#a86f44');r(x+10,y+3,1,1,'#a86f44');r(x+9,y+5,1,1,'#a86f44');r(x+11,y+5,1,1,'#a86f44');
+  const s=Math.round(Math.sin(tk/(aw?6:22))*1.2);r(x+13,y+4+s,2,1,'#c98b5a');r(x+15,y+3+s,1,1,'#c98b5a');
+  if(!aw){const z=(tk%90)/90;ctx.globalAlpha=1-z;txt('z',x+3+z*4,y-2-z*8,'22px "Press Start 2P"',C.cream);ctx.globalAlpha=1}}
+function plant(x,y,k){const s=plantSway[k]>0?Math.sin(tk/2)*1.5*(plantSway[k]/40):Math.sin(tk/50+k)*.3;r(x+4,y-12,2,12,'#3b6d11');ell(x+5+s,y-14,7,6,'#3b6d11');ell(x+5+s,y-15,5,4,'#639922');r(x+3+s,y-18,2,1,'#97c459');r(x+7+s,y-16,1,1,'#97c459');r(x,y,10,12,C.base);r(x,y,10,2,'#a3605a');r(x+7,y+2,2,10,C.woodD)}
+function ballD(){const x=Math.round(ball.x),y=Math.round(ball.y);r(x-3,y,6,1,'rgba(0,0,0,0.3)');pat(BALL,x-2.5,y-5,'#ffffff');if(Math.floor(Math.abs(ball.rot)/4)%2){r(x-1.5,y-4,2,2,'#222222');r(x+.5,y-2,1,1,'#222222')}else{r(x-.5,y-3,2,2,'#222222');r(x-2.5,y-2,1,1,'#222222')}}
+function gifts(){const s=giftShake>0?Math.round(Math.sin(tk*1.5)):0;r(8,102,14,14,'#ed93b1');r(14,102,2,14,C.cream);r(22,106,10,10,'#e8b4a6');r(26,106,2,10,C.bur);
+  r(130+s,100,16,16,'#e8b4a6');r(137+s,100,2,16,C.gold);r(130+s,107,16,2,C.gold);r(135+s,97,3,3,C.gold);r(139+s,97,3,3,C.gold);r(148-s,104,12,12,'#7f77dd');r(153-s,104,2,12,C.cream);r(148-s,109,12,2,C.cream);r(140+s,91,10,9,'#ed93b1');r(144+s,91,2,9,C.gold)}
+function depth(list){list.sort((a,b)=>a[0]-b[0]).forEach(i=>i[1]())}
+function dHall(){lights();timerTxt(340,70,110,150);
+  DOORS.forEach((D,k)=>{const x=D.x;txt(D.lab,x+13,53.5,'500 24px "Cormorant Garamond"',C.cream);
+    if(doorAnim&&doorAnim.k===k){const p=Math.min(1,doorAnim.t/14);r(x,60,26,56,'#120208');r(x,60,26,56,'rgba(255,217,160,'+(0.25*p).toFixed(2)+')');r(x,60,26*(1-p*.8),56,D.sh);r(x,60,26*(1-p*.8),56,'rgba(0,0,0,0.15)');return}
+    if(D.id==='photo'){r(x+8,68,10,9,C.cream);r(x+9,69,8,6,C.gold)}else if(D.id==='straw')spr(STR,x+9.5,67,STRM);else if(D.id==='him')pat(HEART,x+10.5,70,'#f4c0d1');
+    else if(!allDone()){r(x+9,72,8,7,C.gold);r(x+10,68,6,1,C.gold);r(x+10,68,1,4,C.gold);r(x+15,68,1,4,C.gold);r(x+12.5,74,1,2,C.dark)}
+    else{r(x+8,72,10,6,C.rose);r(x+8,72,10,1,C.cream);r(x+12.5,68,1,4,C.cream);r(x+12.5,66-(Math.floor(tk/6)%2),1,2,'#ffcf7a');if(!partyDone)spark(x+25,62,k)}
+    if(isDone(D.id))pat(HEART,x+10.5,41.5,C.warm)});
+  [46,84.5,123.5].forEach((x,i)=>{r(x-.5,59,2,2,'#ffe7c0');light(x+.5,60,22,'rgba(255,190,130,1)',.35+Math.sin(tk/9+i)*.04)});
+  plant(4,226,0);plant(152,226,1);depth([[193,cat],[py,()=>lora(px,py,dir,moving)]]);if(!catAwake)spark(110,184,1)}
+function dPhoto(){lights();stars.forEach(s=>{const b=Math.sin(tk/15+s.p);if(b>-.2)r(s.x,s.y,1,1,b>.6?'#ffffff':'#c9b6d9')});
+  if(shoot)for(let k=0;k<4;k++){const x=shoot.x+k,y=shoot.y-k*.5;if(x>12&&x<46&&y>16&&y<58)r(x,y,1,1,k?'#c9b6d9':'#ffffff')}
+  r(28,16,2,42,C.gold);r(12,36,34,2,C.gold);light(29,40,30,'rgba(190,180,255,1)',.15);timerTxt(360,76,126,176);
+  const on=musicOn||ytPlaying();r(11,78,15,2,'#140509');r(17,78,3,1,on?C.rose:C.bur);if(on&&Math.floor(tk/6)%2)r(13,78,2,1,'#4a3a3e');r(30,84,2,2,on?'#9fe1cb':C.bur);
+  r(139,80,20,8,C.gold);if(!boxOpen){r(138,77,22,4,C.rose);pat(HEART,146.5,82,C.bur)}else{r(140,77,18,3,C.warm);r(138,70,22,3,C.rose);light(149,78,14,'rgba(255,217,160,1)',.4);if(Math.floor(tk/10)%2){r(144,66,1,1,C.warm);r(152,64,1,1,C.warm)}}
+  if(!boxOpen)spark(164,72,0);if(!secrets.has('j'))spark(126,10,1);if(!secrets.has('w'))spark(50,64,2);if(!usedRadio)spark(38,72,3);
+  motes.forEach(m=>{const x=m.x+Math.sin(tk/80+m.p)*4,y=m.y+Math.cos(tk/90+m.p)*3;if(Math.sin(tk/30+m.p)>0)r(x,y,.5,.5,'rgba(246,231,225,0.45)')});
+  depth([[171,table],[py,()=>lora(px,py,dir,moving)],[236,()=>{r(156,234,9,2,C.dark);r(160,186,1,48,C.gold);for(let j=0;j<10;j++){const w=7+j*.5;r(160.5-w/2,176+j,w,1,lampOn?'#f6e7e1':'#b9a39c')}}]]);
+  if(lampOn){light(160,184,36,'rgba(255,205,150,1)',.4+Math.sin(tk/13)*.03);light(158,236,26,'rgba(255,205,150,1)',.15)}
+  notes.forEach(n=>pat(NOTE,n.x,n.y,'rgba(232,180,166,'+(n.l/90).toFixed(2)+')'))}
+function dStraw(){txt('клубничная',85,46,'40px "Marck Script"','#a32d4a');txt('поймай 17',27,76,'500 24px "Cormorant Garamond"','#a32d4a');
+  spr(BUN,143,84-(bunJump>0?Math.round(Math.sin(bunJump/30*Math.PI)*4):0),{w:'#ffffff',p:'#f4c0d1',k:'#3b1a14'});
+  if(!strawDone)spark(46,60,0);spark(160,80,2);lora(px,py,dir,moving);light(85,24,34,'rgba(255,120,160,1)',.12+Math.sin(tk/20)*.03)}
+function dHim(){cityL.forEach((c,i)=>{if(Math.sin(tk/30+i*2.3)>-.5)r(c[0],c[1],1,1,'#ffd9a0')});r(37,14,2,48,'#b4b2a9');r(14,37,48,2,'#b4b2a9');light(38,40,30,'rgba(255,200,120,1)',.08);
+  r(127,89,16,6,Math.floor(tk/40)%5?'#b5d4f4':'#cfe2f7');light(135,92,18,'rgba(150,190,255,1)',.22+Math.sin(tk/7)*.03);
+  r(150,92,7,2,'#888780');r(153,84,1,8,'#888780');r(149,80,9,4,deskOn?'#f6e7e1':'#888780');if(deskOn)light(153,88,34,'rgba(255,210,150,1)',.38);
+  if(anim){const k=anim.k,t=anim.t;lora(HX-(k==='hug'?6:8),HY-(k==='kiss'&&t>30&&t<110?1:0),'right',false);himS(HX,HY,'left',false);if(k==='hug'){r(HX-10,HY-16,6,1,'#5a2e22');r(HX-11,HY-16,1,1,'#f0c8b0')}if(k==='kiss'&&t>35)pat(HEART,HX-6.5,HY-33-Math.min(4,(t-35)/10),'#e0384b')}
+  else{const nr=Math.hypot(px-HX,py-HY)<45,hf=nr?(px<HX?'left':'right'):'down';depth([[HY,()=>himS(HX,HY,hf,himWave>0)],[py,()=>lora(px,py,dir,moving)],[ball.y,ballD]]);if(!himDone)spark(HX+8,HY-32,0)}}
+function dParty(){BLN.forEach(([x,y,c],i)=>{if(popB[i])return;const b=Math.sin(tk/30+i)*1.5;r(x,y+6+b,.5,100-(y+6+b),C.gold);r(x-4,y-5+b,8,10,c);r(x-5,y-3+b,10,6,c);r(x-2,y-4+b,1,2,'rgba(255,255,255,0.6)');r(x-.5,y+5+b,1,1,c)});
+  txt('С днём рождения, Лора',85,35.5,'34px "Marck Script"',C.cream);gifts();
+  depth([[137,cakeD],[py,()=>lora(px,py,dir,moving)]]);if(!partyDone){spark(100,108,0);light(85,110,22,'rgba(255,200,130,1)',.4+Math.sin(tk/5)*.05)}
+  ['rgba(255,120,170,1)','rgba(255,210,140,1)','rgba(170,150,255,1)'].forEach((c,k)=>light(85+Math.cos(tk/70+k*2.1)*55,200+Math.sin(tk/55+k)*35,28,c,.22))}
+function dCatch(){txt(cg.score+'/17',85,24,'28px "Press Start 2P"','#a32d4a');cg.items.forEach(it=>it.bad?spr(BROC,it.x,it.y,BROCM,2):spr(STR,it.x,it.y,STRM,2));
+  lora(cg.bx,254,'down',Math.abs(cg.bt-cg.bx)>1);basket(cg.bx,232,cg.score);cg.pops.forEach(p=>txt(p.t,p.x,p.y,'20px "Press Start 2P"',p.t==='+1'?'#3b6d11':'#a32d2d'))}
+const SC={
+  hall:{walk:[8,118,162,252],blocks:[[112,183,132,195]],objs:[...DOORS.map((D,k)=>({r:[D.x-2,44,D.x+28,116],ap:[D.x+13,120],act:()=>tryDoor(D,k)})),
+    {r:[112,178,136,197],ap:[122,201],act:()=>{catAwake=160;sfx('meow');emote('h');bub('Мур-мур');for(let i=0;i<6;i++)hearts.push({x:118+Math.random()*6,y:182,vx:(Math.random()-.5)*.5,vy:-.3-Math.random()*.3,l:70,s:1})}},
+    {r:[0,204,18,240],ap:[20,236],act:()=>{plantSway[0]=40;sfx('rustle')}},{r:[148,204,170,240],ap:[146,236],act:()=>{plantSway[1]=40;sfx('rustle')}}]},
+  photo:{walk:[8,118,152,252],blocks:[[30,126,140,172]],objs:[
+    {r:[34,122,136,146],sel:(lx,ly)=>{let b=0,bd=1e9;PP.forEach(([x,y],i)=>{const d=Math.hypot(lx-x-5,ly-y-4.5);if(d<bd){bd=d;b=i}});return b},ap:i=>[clamp(PP[i][0]+5,40,130),py<150?124:174],near:i=>Math.abs(px-PP[i][0]-5)<28&&(py<=126||(py>=172&&py<=188)),act:i=>openPhoto(i)},
+    {r:[130,64,168,118],ap:[149,121],act:openBox},{r:[2,68,40,118],ap:[21,121],act:()=>{usedRadio=true;sfx('click');songToggle()}},
+    {r:[124,6,164,50],ap:[144,121],near:()=>Math.abs(px-144)<24&&py<134,act:openJersey},{r:[4,8,54,66],ap:[29,121],near:()=>Math.abs(px-29)<24&&py<134,act:openWindow},
+    {r:[152,170,170,238],ap:[146,222],act:()=>{lampOn=!lampOn;sfx('click')}},matO(0)]},
+  straw:{walk:[8,118,162,252],blocks:[],objs:[{r:[4,58,48,118],ap:[26,122],act:catchIntro},{r:[134,72,160,94],ap:[146,122],act:()=>{bunJump=30;sfx('squeak');emote('h');bub('Наши ушки из фильтра')}},{r:[128,94,164,118],ap:[146,122],act:()=>talk(['Клубничный пуф. Когда-нибудь мы будем сидеть на таком, есть клубнику и смотреть фильмы.'])},{r:[118,36,166,57],ap:[142,122],act:()=>{sfx('click');bub('Клубничное варенье, конечно')}},matO(1)]},
+  him:{walk:[8,124,162,252],blocks:[],objs:[{r:[104,142,120,174],ap:[100,173],near:()=>Math.hypot(px-100,py-173)<10,act:talkHim},
+    {r:()=>[ball.x-6,ball.y-8,ball.x+6,ball.y+3],ap:()=>[ball.x+(px<ball.x?-7:7),ball.y],near:()=>Math.hypot(px-ball.x,py-ball.y)<12,act:kick},
+    {r:[146,76,164,98],ap:[154,128],act:()=>{deskOn=!deskOn;sfx('click')}},{r:[116,12,160,64],ap:[138,128],act:()=>bub('Мой любимый мяч')},{r:[10,10,66,66],ap:[38,128],act:()=>bub('Огни, как в тот вечер')},matO(2)]},
+  party:{walk:[8,120,162,252],blocks:[[54,136,116,172]],objs:[...BLN.map(([x,y],i)=>({on:()=>!popB[i],r:[x-6,y-7,x+6,y+8],near:()=>true,ap:[x,122],act:()=>{popB[i]=600;sfx('balloon');for(let k=0;k<16;k++)conf.push({x,y,vx:(Math.random()-.5)*1.6,vy:-Math.random()*1.2,l:70,c:['#ffd9a0','#ed93b1','#f6e7e1','#e0384b','#9fe1cb'][k%5]})}})),
+    {r:[128,88,164,118],ap:[146,122],act:()=>{giftShake=30;sfx('rattle');bub('Не подглядывай!')}},
+    {r:[54,104,116,172],ap:()=>py<150?[85,133]:[85,176],near:()=>Math.abs(px-85)<34&&((py>=172&&py<=190)||(py>=124&&py<=136)),act:openCake},matO(3)]},
+  catch:{walk:[0,0,W,H],blocks:[],objs:[]}};
+function matO(k){return{r:[64,240,106,260],ap:[85,252],act:()=>enter('hall',[DOORS[k].x+13,122],'down')}}
+function kick(){const dx=ball.x-px,dy=ball.y-py,d=Math.hypot(dx,dy)||1;ball.vx=dx/d*3.2;ball.vy=dy/d*3.2;sfx('kick');emote('!')}
+function inB(x,y){for(const b of SC[scene].blocks)if(x>b[0]&&x<b[2]&&y>b[1]&&y<b[3])return true;return false}
+function clear(a,b){const d=Math.hypot(b[0]-a[0],b[1]-a[1]),n=Math.ceil(d);for(let i=1;i<n;i++){const t=i/n;if(inB(a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t))return false}return true}
+function plan(s,t){if(clear(s,t))return[t];const nodes=[s];SC[scene].blocks.forEach(b=>nodes.push([b[0]-2,b[1]-2],[b[2]+2,b[1]-2],[b[2]+2,b[3]+2],[b[0]-2,b[3]+2]));nodes.push(t);const n=nodes.length;
+  const dist=Array(n).fill(1e9),prev=Array(n).fill(-1),done=Array(n).fill(false);dist[0]=0;
+  for(let k=0;k<n;k++){let u=-1;for(let i=0;i<n;i++)if(!done[i]&&(u<0||dist[i]<dist[u]))u=i;done[u]=true;for(let v=0;v<n;v++){if(done[v]||!clear(nodes[u],nodes[v]))continue;const w=dist[u]+Math.hypot(nodes[u][0]-nodes[v][0],nodes[u][1]-nodes[v][1]);if(w<dist[v]){dist[v]=w;prev[v]=u}}}
+  const p=[];let v=n-1;while(v>0){p.unshift(nodes[v]);v=prev[v];if(v<0)return[t]}return p}
+function go(t){const w=SC[scene].walk;let tx=clamp(t[0],w[0],w[2]),ty=clamp(t[1],w[1],w[3]);
+  for(const b of SC[scene].blocks)if(tx>b[0]&&tx<b[2]&&ty>b[1]&&ty<b[3]){const d=[ty-b[1],b[3]-ty,tx-b[0],b[2]-tx],m=Math.min(...d);if(m===d[0])ty=b[1]-1;else if(m===d[1])ty=b[3]+1;else if(m===d[2])tx=b[0]-1;else tx=b[2]+1}
+  path=plan([px,py],[tx,ty]);tgt=[tx,ty];moving=true}
+function enter(n,pos,d,silent){if(fading)return;fading=true;if(!silent)sfx('door');$('fade').style.opacity=1;
+  setTimeout(()=>{scene=n;doorAnim=null;path=[];pending=null;tgt=null;moving=false;amb.length=0;notes.length=0;dust.length=0;conf.length=0;const p=pos||[85,248];px=p[0];py=p[1];dir=d||'up';if(n==='him')himWave=150;$('fade').style.opacity=0;setTimeout(()=>{fading=false;roomIntro(n)},300)},320)}
+function roomIntro(n){if(seenR[n])return;seenR[n]=true;const L={photo:['Это комната с нашими фото. Найди на столе все 8.','Здесь ещё спрятана пара секретов, а торшер в углу можно включать. Радио слева включает нашу песню.'],straw:['Добро пожаловать в клубничную комнату. Клубничка ведь наш с тобой смайлик.','У корзинки слева мини-игра. А зайку на пуфе можно потискать.'],him:['Кажется, тут кто-то есть…','Подойди к нему. А мяч на полу можно пнуть.'],party:['Праздничный зал! Шарики можно лопать.','А потом подойди к торту.']}[n];if(L)talk(L)}
+function tryDoor(D,k){if(D.id==='party'&&!allDone()){bub('Сначала пройди остальные комнаты');emote('!');sfx('bad');return}dir='up';doorAnim={k,t:0,id:D.id};sfx('door')}
+function update(){
+  if(scene==='catch'){if(cg)updCatch()}
+  else if(!anim&&!doorAnim&&path.length){const p=path[0],dx=p[0]-px,dy=p[1]-py,d=Math.hypot(dx,dy),sp=1.15;
+    if(d<=sp){px=p[0];py=p[1];path.shift()}else{px+=dx/d*sp;py+=dy/d*sp}
+    if(d>.5)dir=Math.abs(dx)>Math.abs(dy)?(dx>0?'right':'left'):(dy>0?'down':'up');
+    if(tk%14===0){sfx('step');dust.push({x:px+(Math.random()-.5)*4,y:py,l:24})}
+    if(!path.length){moving=false;tgt=null;if(pending){const{o,a}=pending;pending=null;o.act(a)}}}
+  if(doorAnim){doorAnim.t++;if(doorAnim.t===18)enter(doorAnim.id,null,'up',true)}
+  if(himWave>0)himWave--;if(catAwake>0)catAwake--;if(bunJump>0)bunJump--;if(giftShake>0)giftShake--;plantSway.forEach((v,i)=>{if(v>0)plantSway[i]--});popB.forEach((v,i)=>{if(v>0)popB[i]--});
+  if(scene==='him'){ball.x+=ball.vx;ball.y+=ball.vy;ball.vx*=.97;ball.vy*=.97;ball.rot+=ball.vx+ball.vy;const sp=Math.hypot(ball.vx,ball.vy);
+    if(ball.x<10||ball.x>160){ball.vx*=-.8;ball.x=clamp(ball.x,10,160);if(sp>.4)sfx('bounce')}if(ball.y<128||ball.y>250){ball.vy*=-.8;ball.y=clamp(ball.y,128,250);if(sp>.4)sfx('bounce')}}
+  if(anim){anim.t++;if(anim.t%5===0)hearts.push({x:HX-7+Math.random()*4,y:HY-26,vx:(Math.random()-.5)*.7,vy:-.35-Math.random()*.4,l:80,s:Math.random()<.3?2:1});if(anim.t===12)sfx(anim.k==='hug'?'hug':'chime');if(anim.t===40&&anim.k==='kiss')sfx('kiss');if(anim.t>=150)endAnim()}
+  if(emo){emo.t++;if(emo.t>70)emo=null}
+  hearts.forEach(h=>{h.x+=h.vx;h.y+=h.vy;h.l--});for(let i=hearts.length-1;i>=0;i--)if(hearts[i].l<=0)hearts.splice(i,1);
+  dust.forEach(d=>{d.y-=.08;d.l--});for(let i=dust.length-1;i>=0;i--)if(dust[i].l<=0)dust.splice(i,1);
+  conf.forEach(c=>{c.x+=c.vx;c.y+=c.vy;c.vy+=.03;c.l--});for(let i=conf.length-1;i>=0;i--)if(conf[i].l<=0)conf.splice(i,1);
+  if(scene!=='catch'&&tk%40===0&&amb.length<12)amb.push({x:Math.random()*W,y:-8,v:.2+Math.random()*.25,p:Math.random()*6,k:scene==='straw'?'s':scene==='party'?'c':(Math.random()<.5?'h':'p'),c:['#ffd9a0','#ed93b1','#f6e7e1','#9fe1cb'][Math.floor(Math.random()*4)]});
+  if(finale&&tk%14===0)amb.push({x:Math.random()*W,y:-8,v:.5+Math.random()*.5,p:Math.random()*6,k:'s'});
+  amb.forEach(a=>{a.y+=a.v;a.x+=Math.sin((tk+a.p*40)/40)*.15});for(let i=amb.length-1;i>=0;i--)if(amb[i].y>H+4)amb.splice(i,1);
+  if(scene==='photo'&&(musicOn||ytPlaying())&&tk%28===0)notes.push({x:16+Math.random()*8,y:74,l:90});notes.forEach(n=>{n.y-=.35;n.x+=Math.sin(n.l/10)*.2;n.l--});for(let i=notes.length-1;i>=0;i--)if(notes[i].l<=0)notes.splice(i,1);
+  if(finale&&tk%40===0)burst();fw.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.vy+=.01;p.vx*=.985;p.vy*=.985;p.l--});for(let i=fw.length-1;i>=0;i--)if(fw[i].l<=0)fw.splice(i,1);
+  if(scene==='photo'){if(!shoot&&Math.random()<.004)shoot={x:45,y:18};if(shoot){shoot.x-=.8;shoot.y+=.4;if(shoot.x<14)shoot=null}}}
+function burst(){sfx('boom');const x=20+Math.random()*130,y=20+Math.random()*90,cs=['#ffd9a0','#e8b4a6','#f6e7e1','#f09595','#ed93b1','#e0384b'],c=cs[Math.floor(Math.random()*6)],hr=Math.random()<.45,n=hr?44:32;
+  for(let k=0;k<n;k++){const a=k/n*Math.PI*2;let vx,vy;if(hr){vx=16*Math.pow(Math.sin(a),3)*.055;vy=-(13*Math.cos(a)-5*Math.cos(2*a)-2*Math.cos(3*a)-Math.cos(4*a))*.055}else{const s=.5+Math.random()*.7;vx=Math.cos(a)*s;vy=Math.sin(a)*s}fw.push({x,y,vx,vy,l:75,c})}}
+function draw(){ctx.drawImage(BG[scene],0,0);({hall:dHall,photo:dPhoto,straw:dStraw,him:dHim,party:dParty,catch:dCatch})[scene]();
+  const lt=scene==='straw'||scene==='catch';
+  dust.forEach(d=>r(d.x,d.y-1,1,1,lt?'rgba(160,90,110,'+(d.l/60).toFixed(2)+')':'rgba(230,210,200,'+(d.l/60).toFixed(2)+')'));
+  if(tgt&&moving&&Math.floor(tk/10)%2)pat(HEART,tgt[0]-2.5,tgt[1]-3,lt?'#d4537e':C.rose);
+  hearts.forEach(h=>pat(HEART,h.x,h.y,'rgba(224,56,75,'+(h.l/80).toFixed(2)+')',h.s));
+  conf.forEach(c=>r(c.x,c.y,1,1.5,c.c));
+  amb.forEach(a=>a.k==='s'?spr(STR,a.x,a.y,STRM):a.k==='c'?r(a.x,a.y,1,1.5,a.c):a.k==='h'?pat(HEART,a.x,a.y,'rgba(232,180,166,0.5)'):r(a.x,a.y,2,1,'rgba(237,147,177,0.6)'));
+  ctx.globalAlpha=lt?.3:1;ctx.drawImage(VIG,0,0);ctx.globalAlpha=1;
+  if(emo&&scene!=='catch'){const y=py-34-Math.min(3,emo.t/4),x=Math.round(px);r(x-4,y,9,8,C.cream);r(x-1,y+8,2,1,C.cream);if(emo.k==='h')pat(HEART,x-2,y+2,'#e0384b');else{r(x,y+1.5,1,3.5,'#a32d4a');r(x,y+6,1,1,'#a32d4a')}}
+  if(finale){ctx.fillStyle='rgba(20,3,8,0.55)';ctx.fillRect(0,0,cv.width,cv.height)}
+  fw.forEach(p=>{ctx.globalAlpha=Math.min(1,p.l/40);r(p.x,p.y,1,1,p.c)});ctx.globalAlpha=1;
+  const b=$('bub');if(b.style.display==='block'){b.style.left=clamp(px*2-b.offsetWidth/2,4,336-b.offsetWidth)+'px';b.style.top=Math.max(4,(py-24)*2-34)+'px'}}
+function loop(){tk++;update();draw();requestAnimationFrame(loop)}
+let lines=[],li=0,typing=null,after=null;
+function talk(arr,cb){lines=arr;li=0;after=cb||null;$('dlg').style.display='block';type()}
+function type(){const s=lines[li];let k=0;$('dt').textContent='';clearInterval(typing);typing=setInterval(()=>{k++;$('dt').textContent=s.slice(0,k);if(k%3===0&&s[k-1]!==' ')sfx('blip');if(k>=s.length){clearInterval(typing);typing=null}},22)}
+function nextLine(){if(typing){clearInterval(typing);typing=null;$('dt').textContent=lines[li];return}li++;sfx('click');if(li>=lines.length){$('dlg').style.display='none';if(after){const a=after;after=null;a()}}else type()}
+$('dlg').addEventListener('click',e=>{e.stopPropagation();nextLine()});
+let bubT=null;function bub(t){const b=$('bub');b.textContent=t;b.style.display='block';clearTimeout(bubT);bubT=setTimeout(()=>b.style.display='none',2200)}
+const ov=$('ov'),fin=$('fin');
+function showOv(h){ov.innerHTML=h;ov.style.display='flex'}
+function closeOv(){ov.style.display='none';sfx('click');if(scene==='photo'&&found.size===8&&!photoDone){photoDone=true;hud();sfx('yay');doneMsg('Все 8 фото найдены!')}}
+function doneMsg(first){talk([first,allDone()?'Праздничный зал открыт. Возвращайся в коридор.':'Комната пройдена. Возвращайся в коридор, тебя ждут другие двери.'])}
+function hud(){$('n1').textContent=found.size+'/8';$('q1').classList.toggle('done',photoDone);$('n2').textContent=(strawDone?17:best)+'/17';$('q2').classList.toggle('done',strawDone);$('q3').classList.toggle('done',himDone);$('q4').classList.toggle('done',partyDone);$('q4').style.opacity=allDone()?1:.5}
+function openPhoto(i){const fresh=!found.has(i);found.add(i);hud();sfx('chime');if(fresh)emote('h');const im=photoOf(i);
+  showOv('<div style="animation:pop .5s"><div style="background:#f6e7e1;padding:10px 10px 14px;width:220px;box-sizing:border-box;color:#4a0f1f;transform:rotate(-2deg)">'+(im?'<canvas id="pc" width="400" height="460" style="width:200px;height:230px;display:block"></canvas>':'<div style="height:230px;background:#d9a595;display:flex;align-items:center;justify-content:center;font-size:38px;color:#7a1f33"><i class="ti ti-photo"></i></div>')+'<div class="ms" style="font-size:21px;margin-top:8px">'+P[i][0]+'</div></div></div><p style="font-size:20px;line-height:1.35;margin:20px 0 6px;max-width:280px">'+P[i][1]+'</p><p class="px" style="font-size:11px;color:#d9a595;margin:0 0 14px">'+found.size+'/8</p><button data-a="close">Дальше</button>');
+  if(im)coverTo($('pc').getContext('2d'),im,0,0,400,460)}
+function openBox(){if(boxOpen){letter();return}sfx('click');code='';let k='';
+  ['1','2','3','4','5','6','7','8','9','del','0','ok'].forEach(v=>{k+='<button class="key" data-a="k" data-v="'+v+'">'+(v==='del'?'<i class="ti ti-backspace"></i>':v==='ok'?'<i class="ti ti-check"></i>':v)+'</button>'});
+  showOv('<i class="ti ti-lock" style="font-size:26px;color:#e8b4a6"></i><p class="ms" style="font-size:28px;margin:4px 0 2px;color:#e8c4b8">Шкатулка заперта</p><p style="font-size:16px;color:#d9a595;margin:0 0 12px">Код: день и месяц, когда всё началось</p><div id="slots" class="px" style="display:flex;gap:8px;font-size:18px"></div><p id="kerr" style="font-size:14px;color:#f09595;min-height:20px;margin:6px 0"></p><div style="display:grid;grid-template-columns:repeat(3,58px);gap:8px">'+k+'</div><button data-a="close" style="margin-top:14px">Закрыть</button>');slots()}
+function slots(){const s=$('slots');if(s)s.innerHTML=[0,1,2,3].map(i=>'<div style="width:36px;height:44px;border:0.5px solid #e8c4b8;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#f6e7e1">'+(code[i]||'')+'</div>').join('')}
+function key(v){const er=$('kerr');sfx('key');
+  if(v==='del'){code=code.slice(0,-1);er.textContent=''}
+  else if(v==='ok'){if(code.length<4){er.textContent='Введи все 4 цифры';return}
+    if(code!==CODE){er.textContent='Не тот код. Вспомни наш день';code='';slots();sfx('bad');const s=$('slots');s.style.animation='none';void s.offsetWidth;s.style.animation='shake .4s';return}
+    boxOpen=true;sfx('yay');emote('h');letter();return}
+  else if(code.length<4){code+=v;er.textContent=''}
+  slots()}
+function letter(){showOv('<div style="background:#f6e7e1;color:#4a0f1f;border-radius:6px;padding:14px 16px;width:292px;box-sizing:border-box;text-align:left;animation:pop .5s"><p class="ms" style="font-size:28px;margin:0 0 6px;color:#7a1f33">Лора,</p><p style="font-size:15px;line-height:1.38;margin:0">тебе исполняется 17, и это совпадение мне нравится. В футболе у меня всегда был номер 17, как будто я ещё тогда готовился к этому году. Теперь это число ещё и твоё.<br><br>Ты умеешь делать обычные дни особенными: достаточно зеркала в коридоре, ночного города или кафе, где ты показываешь мне язык. Я не мастер красивых слов, зато умею быть рядом.<br><br>Пусть этот год подарит тебе всё, о чём ты мечтаешь, и даже немного больше. Люблю тебя.</p></div><button data-a="close" style="margin-top:16px">Закрыть</button>')}
+function openJersey(){secrets.add('j');sfx('chime');showOv('<div style="position:relative;width:170px;height:150px;animation:pop .5s"><div style="position:absolute;left:0;top:6px;width:46px;height:52px;background:#a32d4a;border-radius:8px 0 0 8px"></div><div style="position:absolute;right:0;top:6px;width:46px;height:52px;background:#a32d4a;border-radius:0 8px 8px 0"></div><div style="position:absolute;left:30px;top:0;width:110px;height:150px;background:#a32d4a;border-radius:10px 10px 4px 4px;display:flex;align-items:center;justify-content:center"><span class="px" style="font-size:40px;color:#f6e7e1">17</span></div><div style="position:absolute;left:68px;top:0;width:34px;height:12px;background:#7a1f33;border-radius:0 0 17px 17px"></div></div><p style="font-size:20px;line-height:1.4;margin:22px 0 16px;max-width:280px">Мой номер. В футболе я всегда играл под 17. Тогда я не знал почему, а теперь знаю.</p><p class="px" style="font-size:11px;color:#d9a595;margin:0 0 14px">Секрет '+secrets.size+'/2</p><button data-a="close">Закрыть</button>')}
+function openWindow(){secrets.add('w');sfx('chime');const days=Math.max(1,Math.floor((Date.now()-START)/86400000)),n=Math.min(days,365);let st='';
+  for(let k=0;k<n;k++)st+='<span style="position:absolute;left:'+(3+Math.random()*80)+'%;top:'+(6+Math.random()*86)+'%;width:3px;height:3px;background:#f6e7e1;animation:tw '+(1.5+Math.random()*2).toFixed(1)+'s '+(Math.random()*2).toFixed(1)+'s infinite"></span>';
+  const end=days<60?'Пока их немного, но однажды для них не хватит всего неба.':'И я хочу, чтобы однажды для них не хватило всего неба.';
+  showOv('<div style="position:relative;width:280px;height:180px;background:#1b0f2e;border:3px solid #d9a595;border-radius:6px;overflow:hidden;animation:pop .5s">'+st+'<span style="position:absolute;right:22px;top:18px;width:24px;height:24px;border-radius:50%;background:#f6e7e1"></span><span style="position:absolute;right:15px;top:13px;width:24px;height:24px;border-radius:50%;background:#1b0f2e"></span></div><p style="font-size:20px;line-height:1.4;margin:18px 0 10px;max-width:285px">Мы вместе '+days+' '+plural(days,'день','дня','дней')+'. Здесь по звезде за каждый наш день. '+end+'</p><p class="px" style="font-size:11px;color:#d9a595;margin:0 0 14px">Секрет '+secrets.size+'/2</p><button data-a="close">Закрыть</button>')}
+function catchIntro(){sfx('click');showOv('<p class="ms" style="font-size:34px;margin:0;color:#e8c4b8">Клубничная ловушка</p><p style="font-size:18px;line-height:1.4;margin:12px 0 20px;max-width:270px">Води пальцем по экрану, чтобы двигать корзинку, и поймай 17 клубничек. Брокколи не лови, она отнимает очки.</p><div style="display:flex;gap:10px"><button data-a="startcatch">Начать</button><button data-a="close">Позже</button></div>')}
+function startCatch(){ov.style.display='none';sfx('yay');scene='catch';cg={items:[],score:0,bx:85,bt:85,t:0,won:false,pops:[]};amb.length=0;cv.style.touchAction='none'}
+function updCatch(){cg.t++;cg.bx+=(cg.bt-cg.bx)*.25;
+  if(!cg.won){const ev=Math.round(Math.max(22,46-cg.score*1.3));if(cg.t%ev===0){const bad=cg.score>2&&Math.random()<.22;cg.items.push({x:12+Math.random()*144,y:-16,v:.9+cg.score*.06+Math.random()*.4,bad})}}
+  cg.items.forEach(it=>{it.y+=it.v});
+  for(let i=cg.items.length-1;i>=0;i--){const it=cg.items[i],cx=it.x+(it.bad?5:7),cy=it.y+(it.bad?10:16);
+    if(!cg.won&&!it.deco&&cy>=229&&cy<=243&&Math.abs(cx-cg.bx)<13){cg.items.splice(i,1);
+      if(it.bad){cg.score=Math.max(0,cg.score-1);sfx('bad');cg.pops.push({x:cg.bx,y:222,t:'-1',l:40})}
+      else{cg.score++;best=Math.max(best,cg.score);sfx('pop');cg.pops.push({x:cg.bx,y:222,t:'+1',l:40});if(cg.score>=17)winCatch()}hud();continue}
+    if(it.y>H)cg.items.splice(i,1)}
+  cg.pops.forEach(p=>{p.y-=.4;p.l--});cg.pops=cg.pops.filter(p=>p.l>0)}
+function winCatch(){cg.won=true;strawDone=true;best=17;hud();sfx('yay');for(let k=0;k<30;k++)cg.items.push({x:Math.random()*156,y:-20-Math.random()*140,v:1+Math.random(),bad:false,deco:true});
+  setTimeout(()=>showOv('<p class="px" style="font-size:30px;color:#ed93b1;margin:0">17/17</p><p class="ms" style="font-size:34px;margin:18px 0 6px;color:#f6e7e1;max-width:290px">Ты моя самая сладкая клубничка</p><p style="font-size:18px;color:#d9a595;margin:0 0 22px">Клубничная комната пройдена</p><button data-a="endcatch">Вернуться в комнату</button>'),1600)}
+function endCatch(){ov.style.display='none';sfx('click');scene='straw';cg=null;px=26;py=124;dir='down';path=[];cv.style.touchAction='manipulation';doneMsg('Клубничка поймана!')}
+function talkHim(){if(anim)return;dir='right';if(!seenR.himTalk){seenR.himTalk=true;talk(['Лора, привет. Я ждал тебя здесь.','Сегодня тебе 17, и я хочу, чтобы ты знала одну вещь.','С тобой даже самый обычный вечер становится праздником. Ты делаешь мою жизнь теплее.','С днём рождения, моя клубничка.'],()=>{$('choice').style.display='flex'})}else $('choice').style.display='flex'}
+$('choice').addEventListener('click',e=>{const b=e.target.closest('[data-c]');if(!b)return;$('choice').style.display='none';const k=b.dataset.c;anim={k,t:0};path=[];pending=null;moving=false;px=HX-(k==='hug'?6:8);py=HY;bub(k==='hug'?'Обнимашки':'Чмок')});
+function endAnim(){anim=null;himDone=true;hud();px=HX-13;py=HY;dir='right';talk(['Я люблю тебя, Лора.',allDone()?'Праздничный зал открыт. Возвращайся в коридор.':'Загляни и в другие комнаты.'])}
+function cnd(){return'<button class="cnd" data-a="c" aria-label="Свеча"><span class="fl"></span><span class="st"></span></button>'}
+function openCake(){if(partyDone){startFinale();return}sfx('chime');blown=0;let bk='',fr='';for(let k=0;k<9;k++)bk+=cnd();for(let k=0;k<8;k++)fr+=cnd();
+  showOv('<p class="ms" style="font-size:32px;margin:0;color:#e8c4b8">Загадай желание</p><p style="font-size:18px;color:#d9a595;margin:2px 0 8px">и задуй все 17 свечей</p><div style="position:relative;width:270px;height:200px">'
+  +'<div style="position:absolute;left:-10px;top:178px;width:290px;height:12px;border-radius:50%;background:#f6e7e1"></div>'
+  +'<div style="position:absolute;left:0;top:107px;width:270px;height:76px;background:#e8b4a6;border-radius:0 0 14px 14px;display:flex;align-items:center;justify-content:center"><span class="px" style="font-size:22px;color:#7a1f33;margin-top:16px">17</span></div>'
+  +[30,72,124,176,226].map((x,k)=>'<div style="position:absolute;left:'+x+'px;top:112px;width:14px;height:'+(k%2?24:18)+'px;background:#f6e7e1;border-radius:0 0 8px 8px"></div>').join('')
+  +'<div style="position:absolute;left:0;top:92px;width:270px;height:30px;border-radius:50%;background:#f6e7e1"></div>'
+  +'<div style="position:absolute;left:27px;top:44px;display:flex">'+bk+'</div><div style="position:absolute;left:39px;top:58px;display:flex">'+fr+'</div></div><p class="px" id="cc" style="font-size:12px;color:#e8c4b8;margin:14px 0 12px">0/17</p><button data-a="close">Позже</button>')}
+function blow(b){if(b.classList.contains('out'))return;b.classList.add('out');blown++;sfx('whoosh');$('cc').textContent=blown+'/17';
+  if(blown===17&&!blowing){blowing=true;$('cc').textContent='Желание загадано';setTimeout(()=>{ov.style.display='none';partyDone=true;blowing=false;hud();startFinale()},1100)}}
+function startFinale(){finale=true;fin.style.display='flex';[...fin.children].forEach((c,i)=>{c.style.opacity=0;setTimeout(()=>{c.style.opacity=1},500+i*900)});burst();balloons();sfx('yay')}
+function balloons(){const c=['#e8b4a6','#a32d4a','#f6e7e1','#ed93b1'];for(let i=0;i<12;i++)setTimeout(()=>{const b=document.createElement('div');b.style.cssText='position:absolute;bottom:-80px;z-index:7;pointer-events:none;left:'+(Math.random()*300)+'px;width:30px;height:38px;border-radius:50%;background:'+c[i%4]+';animation:rise '+(5+Math.random()*3).toFixed(1)+'s ease-in forwards';const s=document.createElement('div');s.style.cssText='position:absolute;left:14px;top:38px;width:1px;height:30px;background:#e8c4b8';b.appendChild(s);$('wrap').appendChild(b);setTimeout(()=>b.remove(),9000)},i*300)}
+$('back').onclick=()=>{fin.style.display='none';finale=false;enter('hall',[DOORS[3].x+13,122],'down')};
+ov.addEventListener('click',e=>{const b=e.target.closest('[data-a]');if(!b)return;const a=b.dataset.a;
+  if(a==='close')closeOv();else if(a==='k')key(b.dataset.v);else if(a==='c')blow(b);else if(a==='startcatch')startCatch();else if(a==='endcatch')endCatch()});
+function lp(e){const b=cv.getBoundingClientRect();return[(e.clientX-b.left)/b.width*W,(e.clientY-b.top)/b.height*H]}
+cv.addEventListener('pointerdown',e=>{if(scene==='catch'&&cg)cg.bt=clamp(lp(e)[0],12,158)});
+cv.addEventListener('pointermove',e=>{if(scene==='catch'&&cg)cg.bt=clamp(lp(e)[0],12,158)});
+cv.addEventListener('click',e=>{
+  if(!started||fading||anim||doorAnim||scene==='catch'||ov.style.display==='flex'||fin.style.display==='flex'||$('choice').style.display==='flex')return;
+  if($('dlg').style.display==='block'){nextLine();return}
+  const[lx,ly]=lp(e);let o=null;for(const q of SC[scene].objs){if(q.on&&!q.on())continue;const z=typeof q.r==='function'?q.r():q.r;if(lx>=z[0]&&lx<=z[2]&&ly>=z[1]&&ly<=z[3]){o=q;break}}
+  if(o){const a=o.sel?o.sel(lx,ly):null,ap=typeof o.ap==='function'?o.ap(a):o.ap,nr=o.near?o.near(a):Math.hypot(px-ap[0],py-ap[1])<14;
+    if(nr){path=[];moving=false;tgt=null;o.act(a)}else{pending={o,a};go(ap)}return}
+  if(ly>=SC[scene].walk[1]-8){pending=null;go([lx,ly])}});
+let AC=null,mG=null,sG=null,NB=null,musicOn=false,nextT=0,step=0,schedId=null;
+const mf=m=>440*Math.pow(2,(m-69)/12);
+function initAudio(){if(AC)return;try{if(navigator.audioSession)navigator.audioSession.type='playback'}catch(e){}
+  try{AC=new(window.AudioContext||window.webkitAudioContext)();mG=AC.createGain();mG.gain.value=.6;mG.connect(AC.destination);sG=AC.createGain();sG.gain.value=.8;sG.connect(AC.destination);NB=AC.createBuffer(1,AC.sampleRate,AC.sampleRate);const d=NB.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1}catch(e){AC=null}}
+function tone(f,t,dur,vol,type,out){const o=AC.createOscillator(),gn=AC.createGain();o.type=type||'triangle';o.frequency.value=f;gn.gain.setValueAtTime(0,t);gn.gain.linearRampToValueAtTime(vol,t+.01);gn.gain.exponentialRampToValueAtTime(.0001,t+dur);o.connect(gn);gn.connect(out||mG);o.start(t);o.stop(t+dur+.05)}
+function swp(f1,f2,t,dur,vol,type){const o=AC.createOscillator(),gn=AC.createGain();o.type=type||'triangle';o.frequency.setValueAtTime(f1,t);o.frequency.exponentialRampToValueAtTime(f2,t+dur);gn.gain.setValueAtTime(0,t);gn.gain.linearRampToValueAtTime(vol,t+.01);gn.gain.exponentialRampToValueAtTime(.0001,t+dur);o.connect(gn);gn.connect(sG);o.start(t);o.stop(t+dur+.05)}
+function nz(t,dur,vol,freq,type,q){const s=AC.createBufferSource();s.buffer=NB;const f=AC.createBiquadFilter();f.type=type||'bandpass';f.frequency.value=freq||1000;f.Q.value=q||1;const gn=AC.createGain();gn.gain.setValueAtTime(vol,t);gn.gain.exponentialRampToValueAtTime(.0001,t+dur);s.connect(f);f.connect(gn);gn.connect(sG);s.start(t);s.stop(t+dur+.05)}
+function sfx(k){if(!AC)return;try{const t=AC.currentTime,T=(f,d,v,ty)=>tone(f,t,d,v,ty,sG);
+  if(k==='step')nz(t,.05,.035,1400+Math.random()*600,'bandpass',2);
+  else if(k==='pop'){T(mf(84),.25,.06);tone(mf(91),t+.05,.2,.04,'sine',sG)}
+  else if(k==='chime')[84,88,91,96].forEach((m,i)=>tone(mf(m),t+i*.07,.8,.035,'sine',sG));
+  else if(k==='bad')T(mf(50),.3,.03,'square');
+  else if(k==='door'){swp(150,90,t,.35,.02,'sawtooth');nz(t+.3,.15,.12,180,'lowpass')}
+  else if(k==='yay')[72,76,79,84].forEach((m,i)=>tone(mf(m),t+i*.09,.6,.05,'triangle',sG));
+  else if(k==='meow'){swp(600,950,t,.18,.06,'triangle');swp(950,480,t+.18,.32,.06,'triangle')}
+  else if(k==='blip')T(mf(79+Math.floor(Math.random()*5)),.04,.01,'square');
+  else if(k==='key')T(1200,.05,.03,'sine');
+  else if(k==='click')T(1800,.03,.03,'square');
+  else if(k==='whoosh')nz(t,.35,.1,900,'highpass');
+  else if(k==='boom'){nz(t,.6,.16,300,'lowpass');nz(t+.25,.5,.04,4000,'highpass')}
+  else if(k==='kick'){nz(t,.12,.2,250,'lowpass');T(90,.2,.08,'sine')}
+  else if(k==='bounce')T(140,.1,.04,'sine');
+  else if(k==='squeak'){swp(1100,1700,t,.15,.04,'sine');swp(1700,1200,t+.15,.12,.04,'sine')}
+  else if(k==='rustle')nz(t,.35,.05,3500,'bandpass',.8);
+  else if(k==='balloon'){nz(t,.12,.25,1500,'bandpass',.7);T(mf(96),.15,.03,'sine')}
+  else if(k==='rattle'){for(let i=0;i<4;i++)nz(t+i*.07,.05,.08,2500,'bandpass',3)}
+  else if(k==='kiss'){swp(1500,2400,t,.08,.04,'sine');swp(1500,2400,t+.12,.08,.04,'sine')}
+  else if(k==='hug')[60,64,67,72].forEach(m=>tone(mf(m),t,1.2,.03,'triangle',sG))}catch(e){}}
+const CH=[[57,60,64,69],[53,57,60,65],[48,55,60,64],[55,59,62,67]],ARP=[0,1,2,3,2,1,2,3];
+const MEL=[76,0,74,0,72,0,74,76,77,0,76,0,72,0,69,0,76,0,74,0,72,0,67,0,74,0,72,0,71,0,0,0];
+function sched(){while(nextT<AC.currentTime+.25){const c=CH[Math.floor(step/8)%4],k=step%8;tone(mf(c[ARP[k]]),nextT,1.4,.035,'triangle');if(k===0)tone(mf(c[0]-12),nextT,2.4,.05,'sine');const m=MEL[step%32];if(m){tone(mf(m),nextT,1.6,.04,'sine');tone(mf(m+12),nextT,.9,.012,'sine')}nextT+=.34;step++}}
+function musBtn(){$('mus').innerHTML='<i class="ti '+(musicOn?'ti-player-pause':'ti-music')+'"></i>'}
+function startMusic(){initAudio();if(!AC)return;AC.resume();if(ytPlaying())ytP.pauseVideo();musicOn=true;nextT=AC.currentTime+.1;clearInterval(schedId);schedId=setInterval(sched,90);musBtn()}
+function stopMusic(){musicOn=false;clearInterval(schedId);musBtn()}
+function toggleMusic(){musicOn?stopMusic():startMusic()}
+$('mus').onclick=toggleMusic;
+let ytP=null,ytOK=false;
+function onYouTubeIframeAPIReady(){ytP=new YT.Player('yt',{width:'340',height:'191',videoId:YT_ID,playerVars:{playsinline:1,rel:0},events:{onReady:()=>{ytOK=true},onStateChange:e=>{if(e.data===1&&musicOn)stopMusic()}}})}
+function ytPlaying(){try{return ytOK&&ytP.getPlayerState()===1}catch(e){return false}}
+function songToggle(){if(!ytOK){toggleMusic();return}if(ytPlaying()){ytP.pauseVideo();bub('Пауза')}else{try{ytP.playVideo()}catch(e){}bub('Наша песня');setTimeout(()=>{let s=-1;try{s=ytP.getPlayerState()}catch(e){}if(s!==1&&s!==3)bub('Нажми play под игрой')},1800)}}
+function fit(){const st=$('stage'),s=Math.max(.6,Math.min(1.6,(window.innerWidth-12)/352));st.style.transform='scale('+s+')';$('outer').style.height=Math.ceil(st.offsetHeight*s)+'px'}
+addEventListener('resize',fit);fit();
+(function(){const s=$('sic').getContext('2d');STR.forEach((row,j)=>{for(let i=0;i<row.length;i++){const c=STRM[row[i]];if(c){s.fillStyle=c;s.fillRect(i*4,j*4,4,4)}}})})();
+$('env').onclick=function(){if(started)return;started=true;this.classList.add('open');startMusic();if(ytOK){try{ytP.playVideo()}catch(e){}}
+  setTimeout(()=>{$('intro').style.display='none';$('game').style.display='block';const sg=$('song');sg.style.height='auto';sg.style.opacity=1;musBtn();hud();fit();loop();
+    setTimeout(()=>talk(['Лора, привет. Это дом, который я сделал специально для тебя.','В каждой комнате тебя ждёт что-то своё. А в коридоре спит котик, его можно погладить.','Нажимай на пол, чтобы ходить, и на двери, чтобы заходить.','Под игрой есть наша песня, включи её.','Праздничный зал откроется, когда пройдёшь остальные три комнаты.']),500)},900)};
+</script>
+<script src="https://www.youtube.com/iframe_api"></script>
